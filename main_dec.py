@@ -4,6 +4,7 @@ import pygad
 import numpy
 import benchmark_functions as bf
 import matplotlib.pyplot as plt
+import os
 
 from Consts.enums import FunctionsOptions, MinMax, CrossingMethodsDec
 from Helpers.crossingMethodsBin import TestCrossover
@@ -150,7 +151,7 @@ labels = ['Best Fitness','Average Fitness', 'Standard Deviation']
 for stat, label in zip(statistics, labels):
     make_plot(
         values = stat,
-        file_name = f'Dec{label.replace(" ", "")}',
+        file_name = os.path.join('Plots', f'Dec{label.replace(" ", "")}'),
         title = label,
         mutation_type = mutation_type_name,
         crossover_type = selected_crossover.name,
