@@ -2,16 +2,19 @@ import logging
 
 import pygad
 import numpy
+import matplotlib.pyplot as plt
 import benchmark_functions as bf
 
 from Consts.enums import FunctionsOptions, MinMax, CrossingMethodsBin
 from Helpers.crossingMethodsBin import TestCrossover, SinglePointCrossover, TwoPointCrossover, ThreePointCrossover, \
     UniformCrossover, GrainCrossover, ScanningCrossover, PartialCopyCrossover, MultivariateCrossover
 from Helpers.decimalBinaryMath import binary_to_decimal, split, get_actual_values
+from Helpers.plotsNFiles import make_plot, save_to_file
+
 
 ############ BINARNA ############
 
-num_genes = 48  #Długość osobnikia * Liczba wymiarów
+num_genes = 48  #Długość osobnika * Liczba wymiarów
 num_of_dimensions = 2  #Liczba wymiarów
 
 ## FLAGI
@@ -62,7 +65,6 @@ match (selected_crossover):  #przypisanie własnych funckji crossover
     case CrossingMethodsBin.MULTIVARIATE:
         crossover_type = MultivariateCrossover(q).crossover
 
-
 def fitness_func_min(ga_instance, solution,
                      solution_idx):
     actual_value = get_actual_values(solution, decode_start, decode_end, num_of_dimensions)
@@ -96,6 +98,8 @@ console_format = logging.Formatter('%(message)s')
 console_handler.setFormatter(console_format)
 logger.addHandler(console_handler)
 
+avg_fitness = []
+std_fitness = []
 
 def on_generation(ga_instance):
     ga_instance.logger.info("Generation = {generation}".format(generation=ga_instance.generations_completed))
@@ -107,6 +111,9 @@ def on_generation(ga_instance):
         solution=repr(get_actual_values(solution, decode_start, decode_end, num_of_dimensions))))
 
     tmp = [1. / x for x in ga_instance.last_generation_fitness]  #ponownie odwrotność by zrobić sobie dobre statystyki
+
+    avg_fitness.append(numpy.average(tmp))
+    std_fitness.append(numpy.std(tmp))
 
     ga_instance.logger.info("Min    = {min}".format(min=numpy.min(tmp)))
     ga_instance.logger.info("Max    = {max}".format(max=numpy.max(tmp)))
@@ -147,3 +154,20 @@ print("Fitness value of the best solution = {solution_fitness}".format(solution_
 # sztuczka: odwracamy my narysował nam się oczekiwany wykres dla problemu minimalizacji
 ga_instance.best_solutions_fitness = [1. / x for x in ga_instance.best_solutions_fitness]
 ga_instance.plot_fitness()
+
+statistics = [ga_instance.best_solutions_fitness, avg_fitness, std_fitness]
+labels = ['Best Fitness','Average Fitness', 'Standard Deviation']
+# colors = ['lightcoral', 'lightseagreen', 'indigo']
+
+for stat, label in zip(statistics, labels):
+    make_plot(
+        values=stat,
+        file_name=f'Bin{label.replace(" ", "")}',
+        title=label,
+        mutation_type=mutation_type,
+        crossover_type=selected_crossover.name,
+        selection_type=parent_selection_type
+    )
+
+
+

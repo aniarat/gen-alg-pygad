@@ -65,4 +65,4 @@ class MinMax(Enum):
 
 class FunctionsOptions(Enum):
     RASTRIGIN = 0
-    SCHWEFEK = 1
+    SCHWEFEL = 1

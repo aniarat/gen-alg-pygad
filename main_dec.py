@@ -3,12 +3,14 @@ import logging
 import pygad
 import numpy
 import benchmark_functions as bf
+import matplotlib.pyplot as plt
 
 from Consts.enums import FunctionsOptions, MinMax, CrossingMethodsDec
 from Helpers.crossingMethodsBin import TestCrossover
 from Helpers.crossingMethodsDec import SingleArithmeticalCrossover, ArithmeticalCrossover, LinearCrossover, \
     BlendCrossoverAlfaBeta, BlendCrossoverAlfa, AverageCrossover, SimpleCrossover, RandomCrossover
 from Helpers.mutationMethods import GaussMutation
+from Helpers.plotsNFiles import make_plot, save_to_file
 
 ############ DZIESIETNA ############
 
@@ -32,6 +34,8 @@ decode_start = func.suggested_bounds()[0][0]  #zakres początkowy w szukanej fun
 decode_end = func.suggested_bounds()[1][0]  ##zakres końcowy w szukanej funkcji
 # mutation_type = "swap"  #(random)(None)(swap)(inversion)(adaptive)
 mutation_type = GaussMutation(num_genes, 0, 1, decode_start, decode_end, 0.2).mutate
+mutation_type_name = "GaussMutation" #potrzebne do wykresu
+
 
 # crossover_type = "uniform"  #(single_point)(two_points)(uniform)
 match (selected_crossover):  #przypisanie własnych funckji crossover
@@ -85,6 +89,8 @@ console_format = logging.Formatter('%(message)s')
 console_handler.setFormatter(console_format)
 logger.addHandler(console_handler)
 
+avg_fitness = []
+std_fitness = []
 
 def on_generation(ga_instance):
     ga_instance.logger.info("Generation = {generation}".format(generation=ga_instance.generations_completed))
@@ -102,6 +108,8 @@ def on_generation(ga_instance):
     ga_instance.logger.info("Std    = {std}".format(std=numpy.std(tmp)))
     ga_instance.logger.info("\r\n")
 
+    avg_fitness.append(numpy.average(tmp))
+    std_fitness.append(numpy.std(tmp))
 
 #Właściwy algorytm genetyczny
 ga_instance = pygad.GA(num_generations=num_generations,
@@ -134,3 +142,19 @@ print("Fitness value of the best solution = {solution_fitness}".format(solution_
 # sztuczka: odwracamy my narysował nam się oczekiwany wykres dla problemu minimalizacji
 ga_instance.best_solutions_fitness = [1. / x for x in ga_instance.best_solutions_fitness]
 ga_instance.plot_fitness()
+
+statistics = [ga_instance.best_solutions_fitness, avg_fitness, std_fitness]
+labels = ['Best Fitness','Average Fitness', 'Standard Deviation']
+# colors = ['lightcoral', 'lightseagreen', 'indigo']
+
+for stat, label in zip(statistics, labels):
+    make_plot(
+        values = stat,
+        file_name = f'Dec{label.replace(" ", "")}',
+        title = label,
+        mutation_type = mutation_type_name,
+        crossover_type = selected_crossover.name,
+        selection_type = parent_selection_type
+    )
+
+
