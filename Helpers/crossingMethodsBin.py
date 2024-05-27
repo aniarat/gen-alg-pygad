@@ -166,26 +166,56 @@ class MultivariateCrossover(CrossoverMethod):
     def __init__(self, q):
         self.q = q
 
-    def crossover(self, population: np.ndarray, offspring_size, ga_instance):
-        offspring = []
-        n_offspring = offspring_size[0]
-        n_spec = offspring_size[1]
-        while len(offspring) != n_offspring:
-            p1_idx, p2_idx = random.randint(0, n_spec), random.randint(0, n_spec)
-            parent1, parent2 = population[p1_idx], population[p2_idx]
-            cp: int = random.randint(0, len(parent1) - 2)
-            child1 = None
-            child2 = None
-            for j in range(self.q - 1):
-                if random.random() <= 0.5:
-                    child1 = np.append(parent1[:cp], parent2[cp:])
-                    child2 = np.append(parent2[:cp], parent1[cp:])
-                else:
-                    child1 = parent1
-                    child2 = parent2
-            offspring.append(np.array(child1))
-            offspring.append(np.array(child2))
-            if len(offspring) == n_offspring + 1:
-                return np.array(offspring[:-1])
+    # def crossover(self, population: np.ndarray, offspring_size, ga_instance):
+    #     offspring = []
+    #     n_offspring = offspring_size[0]
+    #     n_spec = offspring_size[1]
+    #     while len(offspring) != n_offspring:
+    #         p1_idx, p2_idx = random.randint(0, n_spec), random.randint(0, n_spec)
+    #         parent1, parent2 = population[p1_idx], population[p2_idx]
+    #         cp: int = random.randint(0, len(parent1) - 2)
+    #         child1 = None
+    #         child2 = None
+    #         for j in range(self.q - 1):
+    #             if random.random() <= 0.5:
+    #                 child1 = np.append(parent1[:cp], parent2[cp:])
+    #                 child2 = np.append(parent2[:cp], parent1[cp:])
+    #             else:
+    #                 child1 = parent1
+    #                 child2 = parent2
+    #         offspring.append(np.array(child1))
+    #         offspring.append(np.array(child2))
+    #         if len(offspring) == n_offspring + 1:
+    #             return np.array(offspring[:-1])
 
-        return np.array(offspring)
+    #     return np.array(offspring)
+
+    def crossover(self, population: np.ndarray, offspring_size, ga_instance):
+            offspring = []
+            n_offspring = offspring_size[0]
+            n_spec = len(population)
+
+            while len(offspring) < n_offspring:
+                p1_idx = random.randint(0, n_spec - 1)
+                p2_idx = random.randint(0, n_spec - 1)
+                while p2_idx == p1_idx:
+                    p2_idx = random.randint(0, n_spec - 1)
+
+                parent1, parent2 = population[p1_idx], population[p2_idx]
+                child1, child2 = parent1.copy(), parent2.copy()
+
+                for _ in range(self.q - 1):
+                    cp = random.randint(1, len(parent1) - 2)
+                    if random.random() <= 0.5:
+                        child1 = np.append(parent1[:cp], parent2[cp:])
+                        child2 = np.append(parent2[:cp], parent1[cp:])
+                    else:
+                        child1, child2 = parent1, parent2
+
+                offspring.append(child1)
+                offspring.append(child2)
+
+                if len(offspring) > n_offspring:
+                    offspring = offspring[:n_offspring]
+
+            return np.array(offspring)
