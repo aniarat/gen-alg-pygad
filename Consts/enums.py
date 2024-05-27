@@ -15,14 +15,14 @@ class CrossingMethodsBin(Enum):
     BUILD_IN_SINGLE_POINT = 'single_point'
     BUILD_IN_DOUBLE_POINT = 'two_points'
     BUILD_IN_UNIFORM = 'uniform'
-    SINGLE_POINT_STRING = 'Krzyżowanie 1 punktowe'
-    DOUBLE_POINT_STRING = 'Krzyżowanie 2 punktowe'
-    TRIPLE_POINT_STRING = 'Krzyżowanie 3 punktowe'
-    UNIFORM_STRING = 'Krzyżowanie jednorodne'
-    GRAIN_STRING = 'Krzyżowanie ziarniste'
-    SCANNING_STRING = 'Krzyżowanie skanujące'
-    PARTIAL_STRING = 'Krzyżowanie częściowe'
-    MULTIVARIATE_STRING = 'Krzyżowanie wielowymiarowe'
+    SINGLE_POINT_STRING = '1 punktowe'
+    DOUBLE_POINT_STRING = '2 punktowe'
+    TRIPLE_POINT_STRING = '3 punktowe'
+    UNIFORM_STRING = 'jednorodne'
+    GRAIN_STRING = 'ziarniste'
+    SCANNING_STRING = 'skanujące'
+    PARTIAL_STRING = 'częściowe'
+    MULTIVARIATE_STRING = 'wielowymiarowe'
 
     ALL_OPTIONS_STRING = [SINGLE_POINT_STRING,
                           DOUBLE_POINT_STRING,
@@ -38,21 +38,21 @@ class CrossingMethodsDec(Enum):
     NONE = -1
     TEST = -2
     SINGLE_POINT_ARITHMETIC = 0
-    SINGLE_POINT_ARITHMETIC_STRING = 'Krzyżowanie 1 arytmetyczne'
+    SINGLE_POINT_ARITHMETIC_STRING = 'pojedyncze arytmetyczne'
     ARITHMETIC = 1
-    ARITHMETIC_STRING = 'Krzyżowanie arytmetyczne'
+    ARITHMETIC_STRING = 'arytmetyczne'
     LINEAR = 2
-    LINEAR_STRING = 'Krzyżowanie linearne'
+    LINEAR_STRING = 'linearne'
     BLEND_ALFA = 3
-    BLEND_ALFA_STRING = 'Krzyżowanie mieszające typu alfa'
+    BLEND_ALFA_STRING = 'mieszające typu alfa'
     BLEND_ALFA_BETA = 4
-    BLEND_ALFA_BETA_STRING = 'Krzyżowanie mieszające typu alfa i beta'
+    BLEND_ALFA_BETA_STRING = 'mieszające typu alfa i beta'
     AVERAGE = 5
-    AVERAGE_STRING = 'Krzyżowanie uśredniające'
+    AVERAGE_STRING = 'uśredniające'
     SIMPLE = 6
-    SIMPLE_STRING = 'Krzyżowanie proste'
+    SIMPLE_STRING = 'proste'
     RANDOM = 7
-    RANDOM_STRING = 'Krzyżowanie przypadkowe'
+    RANDOM_STRING = 'przypadkowe'
 
     ALL_OPTIONS_STRING = [SINGLE_POINT_ARITHMETIC_STRING, ARITHMETIC_STRING, LINEAR_STRING, BLEND_ALFA_STRING,
                           BLEND_ALFA_BETA_STRING, AVERAGE_STRING, SIMPLE_STRING, RANDOM_STRING]

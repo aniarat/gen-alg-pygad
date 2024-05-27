@@ -157,25 +157,25 @@ match (crossover_type):  #przypisanie własnych funkcji crossover
         crossover_name = CrossingMethodsBin.SinglePointCrossover.value
     case CrossingMethodsBin.DOUBLE_POINT:
         crossover_type = TwoPointCrossover
-        crossover_name = CrossingMethodsBin.DOUBLE_POINT_STRING
+        crossover_name = CrossingMethodsBin.DOUBLE_POINT_STRING.value
     case CrossingMethodsBin.TRIPLE_POINT:
         crossover_type = ThreePointCrossover
-        crossover_name = CrossingMethodsBin.TRIPLE_POINT_STRING
+        crossover_name = CrossingMethodsBin.TRIPLE_POINT_STRING.value
     case CrossingMethodsBin.UNIFORM:
         crossover_type = UniformCrossover
-        crossover_name = CrossingMethodsBin.UNIFORM_STRING
+        crossover_name = CrossingMethodsBin.UNIFORM_STRING.value
     case CrossingMethodsBin.GRAIN:
         crossover_type = GrainCrossover
-        crossover_name = CrossingMethodsBin.GRAIN_STRING
+        crossover_name = CrossingMethodsBin.GRAIN_STRING.value
     case CrossingMethodsBin.SCANNING:
         crossover_type = ScanningCrossover(num_of_dimensions).crossover
-        crossover_name = CrossingMethodsBin.SCANNING_STRING
+        crossover_name = CrossingMethodsBin.SCANNING_STRING.value
     case CrossingMethodsBin.PARTIAL:
         crossover_type = PartialCopyCrossover
-        crossover_name = CrossingMethodsBin.PARTIAL_STRING
+        crossover_name = CrossingMethodsBin.PARTIAL_STRING.value
     case CrossingMethodsBin.MULTIVARIATE:
         crossover_type = MultivariateCrossover(q).crossover
-        crossover_name = CrossingMethodsBin.MULTIVARIATE_STRING
+        crossover_name = CrossingMethodsBin.MULTIVARIATE_STRING.value
 
 def fitness_func_min(ga_instance, solution,
                      solution_idx):
@@ -277,6 +277,7 @@ for stat, label in zip(statistics, labels):
         values = stat,
         file_name = os.path.join('Plots', f'Bin{label.replace(" ", "")}'),
         title = label,
+        func_enum = func_enum.name,
         mutation_type = mutation_type,
         crossover_type = crossover_name,
         selection_type = parent_selection_type,
@@ -289,4 +290,3 @@ for stat, label in zip(statistics, labels):
 
 
 
-    plt.legend([f"num_genes={num_genes}", f"num_of_dimensions={num_of_dimensions}", f"num_generations={num_generations}", f"sol_per_pop={sol_per_pop}", f"num_parents_mating={num_parents_mating}"])
