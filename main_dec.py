@@ -190,7 +190,14 @@ logger.addHandler(console_handler)
 avg_fitness = []
 std_fitness = []
 
+solution_times = []
+
+# start_time = time.time()
 def on_generation(ga_instance):
+    # end_time = time.time()
+    # solution_time = end_time - start_time
+    # solution_times.append(solution_time)
+
     ga_instance.logger.info("Generation = {generation}".format(generation=ga_instance.generations_completed))
     solution, solution_fitness, solution_idx = ga_instance.best_solution(
         pop_fitness=ga_instance.last_generation_fitness)
@@ -208,6 +215,7 @@ def on_generation(ga_instance):
 
     avg_fitness.append(numpy.average(tmp))
     std_fitness.append(numpy.std(tmp))
+
 
 #Właściwy algorytm genetyczny
 ga_instance = pygad.GA(num_generations=num_generations,
@@ -230,16 +238,26 @@ ga_instance = pygad.GA(num_generations=num_generations,
                        on_generation=on_generation,
                        parallel_processing=['thread', 4])
 
+start_time = time.time()
+
 ga_instance.run()
+
+end_time = time.time()
+execution_time = end_time - start_time
 
 best = ga_instance.best_solution()
 solution, solution_fitness, solution_idx = ga_instance.best_solution()
+# best_solution_time = solution_times[solution_idx]
+
 
 print("Best specimen : {solution}".format(
     solution=solution))
 print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=round(1. / solution_fitness, 4)))
-#print("Execution time for the best solution: {:.5f} seconds".format(execution_time))
+# print("Execution time for the best solution: {best_solution_time} seconds".format(best_solution_time=round(best_solution_time, 4)))
 
+print("==============================================")
+print("Czas wykonywania obliczeń")
+print("Total execution time: {execution_time} seconds".format(execution_time=round(execution_time, 4)))
 
 # sztuczka: odwracamy my narysował nam się oczekiwany wykres dla problemu minimalizacji
 ga_instance.best_solutions_fitness = [1. / x for x in ga_instance.best_solutions_fitness]
