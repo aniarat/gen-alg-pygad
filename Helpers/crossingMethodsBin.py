@@ -28,6 +28,26 @@ def SinglePointCrossover(population: np.ndarray, offspring_size, ga_instance):
         if len(offspring) == n_offspring + 1:
             return np.array(offspring[:-1])
     return np.array(offspring)
+# def SinglePointCrossover(population: np.ndarray, offspring_size, ga_instance):
+#     offspring = []
+#     n_offspring = offspring_size[0]
+#     n_genes = offspring_size[1]
+
+#     while len(offspring) < n_offspring:
+#         p1_idx = random.randint(0, population.shape[0] - 1)
+#         p2_idx = random.randint(0, population.shape[0] - 1)
+#         parent1, parent2 = population[p1_idx], population[p2_idx]
+
+#         crossing_point = random.randint(1, len(parent1) - 1)
+
+#         child1 = np.concatenate((parent1[:crossing_point], parent2[crossing_point:]))
+#         child2 = np.concatenate((parent2[:crossing_point], parent1[crossing_point:]))
+
+#         offspring.append(child1)
+#         if len(offspring) < n_offspring:
+#             offspring.append(child2)
+
+#     return np.array(offspring)
 
 
 def TwoPointCrossover(population: np.ndarray, offspring_size, ga_instance):
@@ -70,49 +90,98 @@ def ThreePointCrossover(population: np.ndarray, offspring_size, ga_instance):
     return np.array(offspring)
 
 
+# def UniformCrossover(population: np.ndarray, offspring_size, ga_instance):
+#     offspring = []
+#     n_offspring = offspring_size[0]
+#     n_spec = offspring_size[1]
+#     while len(offspring) != n_offspring:
+#         p1_idx = random.randint(0, n_spec)
+#         p2_idx = random.randint(0, n_spec)
+#         parent1, parent2 = population[p1_idx], population[p2_idx]
+#         child1 = []
+#         child2 = []
+#         for gene1, gene2 in zip(parent1, parent2):
+#             if random.random() <= 0.5:
+#                 np.append(child1, gene2)
+#                 np.append(child2, gene1)
+#             else:
+#                 np.append(child1, gene1)
+#                 np.append(child2, gene2)
+#         offspring.append(np.array(child1))
+#         offspring.append(np.array(child2))
+#         if len(offspring) == n_offspring + 1:
+#             return np.array(offspring[:-1])
+#     return np.array(offspring)
+
 def UniformCrossover(population: np.ndarray, offspring_size, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
-    while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+    n_genes = offspring_size[1]
+
+    while len(offspring) < n_offspring:
+        p1_idx = random.randint(0, population.shape[0] - 1)
+        p2_idx = random.randint(0, population.shape[0] - 1)
         parent1, parent2 = population[p1_idx], population[p2_idx]
-        child1 = []
-        child2 = []
+
+        child1, child2 = [], []
+
         for gene1, gene2 in zip(parent1, parent2):
-            if random.random() <= 0.5:
-                np.append(child1, gene2)
-                np.append(child2, gene1)
+            if random.random() < 0.5:
+                child1.append(gene1)
+                child2.append(gene2)
             else:
-                np.append(child1, gene1)
-                np.append(child2, gene2)
-        offspring.append(np.array(child1))
-        offspring.append(np.array(child2))
-        if len(offspring) == n_offspring + 1:
-            return np.array(offspring[:-1])
-    return np.array(offspring)
+                child1.append(gene2)
+                child2.append(gene1)
+
+        offspring.append(child1)
+        if len(offspring) < n_offspring:
+            offspring.append(child2)
+
+    return np.array(offspring[:n_offspring])
+
+
+# def GrainCrossover(population: np.ndarray, offspring_size, ga_instance):
+#     offspring = []
+#     n_offspring = offspring_size[0]
+#     n_spec = offspring_size[1]
+#     while len(offspring) != n_offspring:
+#         p1_idx = random.randint(0, n_spec)
+#         p2_idx = random.randint(0, n_spec)
+#         parent1, parent2 = population[p1_idx], population[p2_idx]
+#         child = []
+#         for gene1, gene2 in zip(parent1, parent2):
+#             if random.random() <= 0.5:
+#                 child.append(gene1)
+#             else:
+#                 child.append(gene2)
+#         offspring.append(np.array(child))
+#         if len(offspring) == n_offspring + 1:
+#             return np.array(offspring[:-1])
+#     return np.array(offspring)
 
 
 def GrainCrossover(population: np.ndarray, offspring_size, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
-    while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+    n_genes = offspring_size[1]
+
+    while len(offspring) < n_offspring:
+        # Losowe wybieranie dwóch rodziców z populacji
+        p1_idx = random.randint(0, population.shape[0] - 1)
+        p2_idx = random.randint(0, population.shape[0] - 1)
         parent1, parent2 = population[p1_idx], population[p2_idx]
+
         child = []
+
         for gene1, gene2 in zip(parent1, parent2):
-            if random.random() <= 0.5:
+            if random.random() < 0.5:
                 child.append(gene1)
             else:
                 child.append(gene2)
-        offspring.append(np.array(child))
-        if len(offspring) == n_offspring + 1:
-            return np.array(offspring[:-1])
-    return np.array(offspring)
 
+        offspring.append(child)
+
+    return np.array(offspring)
 
 def PartialCopyCrossover(population: np.ndarray, offspring_size, ga_instance):
     offspring = []

@@ -42,6 +42,7 @@ def get_crossover_type():
         CrossingMethodsBin.BUILD_IN_UNIFORM,
         CrossingMethodsBin.SINGLE_POINT,
         CrossingMethodsBin.DOUBLE_POINT,
+        CrossingMethodsBin.TRIPLE_POINT,
         CrossingMethodsBin.UNIFORM,
         CrossingMethodsBin.GRAIN,
         CrossingMethodsBin.SCANNING,
@@ -88,7 +89,7 @@ num_of_dimensions = get_user_input("Podaj liczbę wymiarów")
 num_generations = get_user_input("Podaj liczbę generacji (epok)")
 sol_per_pop = get_user_input("Podaj liczbę rozwiązań (chromosomów) w populacji")
 num_parents_mating = get_input_with_check(
-    "Podaj liczbę rozwiązań, które zostaną rodzicami",
+    "Podaj liczbę chromosomów, które zostaną rodzicami",
     lambda x: x <= sol_per_pop
 )
 
@@ -154,7 +155,7 @@ match (crossover_type):  #przypisanie własnych funkcji crossover
         crossover_name = CrossingMethodsBin.BUILD_IN_UNIFORM.value
     case CrossingMethodsBin.SINGLE_POINT:
         crossover_type = SinglePointCrossover
-        crossover_name = CrossingMethodsBin.SinglePointCrossover.value
+        crossover_name = CrossingMethodsBin.SINGLE_POINT_STRING.value
     case CrossingMethodsBin.DOUBLE_POINT:
         crossover_type = TwoPointCrossover
         crossover_name = CrossingMethodsBin.DOUBLE_POINT_STRING.value

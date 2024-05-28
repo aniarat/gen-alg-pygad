@@ -8,10 +8,11 @@ def SingleArithmeticalCrossover(population: np.ndarray, offspring_size: tuple, g
     alpha = 0.3
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    #n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         parent1, parent2 = population[p1_idx], population[p2_idx]
         gen_idx = np.random.randint(0, len(parent1))
         child1, child2 = copy.copy(parent1), copy.copy(parent2)
@@ -29,10 +30,11 @@ def ArithmeticalCrossover(population: np.ndarray, offspring_size: tuple, ga_inst
     alpha = 0.3
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    #n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         parent1, parent2 = population[p1_idx], population[p2_idx]
         child1 = np.array([(1 - alpha) * parent2[x] + alpha * parent1[x] for x in range(len(parent1))])
         child2 = np.array([(1 - alpha) * parent1[x] + alpha * parent2[x] for x in range(len(parent1))])
@@ -46,10 +48,11 @@ def ArithmeticalCrossover(population: np.ndarray, offspring_size: tuple, ga_inst
 def BlendCrossoverAlfaBeta(population: np.ndarray, offspring_size: tuple, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    #n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         p1, p2 = population[p1_idx], population[p2_idx]
         child1 = np.empty_like(p1)
         child2 = np.empty_like(p1)
@@ -77,10 +80,11 @@ def BlendCrossoverAlfaBeta(population: np.ndarray, offspring_size: tuple, ga_ins
 def BlendCrossoverAlfa(population: np.ndarray, offspring_size: tuple, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    #n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         p1, p2 = population[p1_idx], population[p2_idx]
         child1 = np.empty_like(p1)
         child2 = np.empty_like(p1)
@@ -117,11 +121,12 @@ def AverageCrossover(population: np.ndarray, offspring_size: tuple, ga_instance)
 def SimpleCrossover(population: np.ndarray, offspring_size: tuple, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    #n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     while len(offspring) != n_offspring:
         alpha = np.random.uniform(low=0, high=1)
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         p1, p2 = population[p1_idx], population[p2_idx]
         child1 = []
         child2 = []
@@ -144,11 +149,12 @@ def SimpleCrossover(population: np.ndarray, offspring_size: tuple, ga_instance):
 def RandomCrossover(population: np.ndarray, offspring_size: tuple, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    #n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     n_dim = len(population[0])
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         p1, p2 = population[p1_idx], population[p2_idx]
         chromosome_Z = np.array([np.random.uniform() for i in range(n_dim)])
         chromosome_W = np.array([np.random.uniform() for i in range(n_dim)])
@@ -178,10 +184,11 @@ class LinearCrossover(CrossoverMethod):
     def crossover(self, population: np.ndarray, offspring_size: tuple, ga_instance):
         offspring = []
         n_offspring = offspring_size[0]
-        n_spec = offspring_size[1]
+        #n_spec = offspring_size[1]
+        n_spec = population.shape[0]
         while len(offspring) != n_offspring:
-            p1_idx = random.randint(0, n_spec)
-            p2_idx = random.randint(0, n_spec)
+            p1_idx = random.randint(0, n_spec - 1)
+            p2_idx = random.randint(0, n_spec - 1)
             p1, p2 = population[p1_idx], population[p2_idx]
             Z = np.array([p1[x] / 2 + p2[x] / 2 for x in range(len(p1))])
             V = np.array([p1[x] * 3 / 2 + p2[x] / (-2) for x in range(len(p1))])
@@ -195,3 +202,24 @@ class LinearCrossover(CrossoverMethod):
             if len(offspring) == n_offspring + 1:
                 return np.array(offspring[:-1])
         return np.array(offspring)
+
+    # def crossover(self, population: np.ndarray, offspring_size: tuple, ga_instance):
+    #     offspring = []
+    #     n_offspring = offspring_size[0]
+    #     n_spec = offspring_size[1]
+    #     while len(offspring) != n_offspring:
+    #         p1_idx = random.randint(0, n_spec - 1)
+    #         p2_idx = random.randint(0, n_spec - 1)
+    #         p1, p2 = population[p1_idx], population[p2_idx]
+    #         Z = np.array([p1[x] / 2 + p2[x] / 2 for x in range(len(p1))])
+    #         V = np.array([p1[x] * 3 / 2 + p2[x] / (-2) for x in range(len(p1))])
+    #         W = np.array([p1[x] / (-2) + p2[x] * 3 / 2 for x in range(len(p1))])
+    #         values = [self.func(Z), self.func(W), self.func(V)]
+    #         zip = np.column_stack((values, [Z, W, V]))
+    #         sorted = zip[zip[:, 0].argsort()]
+    #         best_linear = np.array([spec[1:] for spec in sorted[:2]])
+    #         offspring.append(best_linear[0])
+    #         offspring.append(best_linear[1])
+    #         if len(offspring) == n_offspring + 1:
+    #             return np.array(offspring[:-1])
+    #     return np.array(offspring)

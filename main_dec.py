@@ -5,6 +5,7 @@ import numpy
 import benchmark_functions as bf
 import matplotlib.pyplot as plt
 import os
+import time
 
 from Consts.enums import FunctionsOptions, MinMax, CrossingMethodsDec
 from Helpers.crossingMethodsBin import TestCrossover
@@ -13,19 +14,101 @@ from Helpers.crossingMethodsDec import SingleArithmeticalCrossover, Arithmetical
 from Helpers.mutationMethods import GaussMutation
 from Helpers.plotsNFiles import make_plot, save_to_file
 
-############ DZIESIETNA ############
+############ RZECZYWISTA ############
 
-num_genes = 2  #Liczba wymiarów
+#Funkcje do pobierania wartości od użytkownika
+def choose_option(prompt, options):
+    print(prompt)
+    for i, option in enumerate(options, 1):
+        print(f"{i}. {option}")
+    choice = input("Wybierz opcję: ")
+    if not choice.isdigit() or int(choice) < 1 or int(choice) > len(options):
+        print("Nieprawidłowy wybór. Wybierz numer opcji z listy.")
+    else:
+        return options[int(choice) - 1]
 
+def get_selection_type():
+    options = ["rws", "random", "tournament"]
+    return choose_option("Wybierz metodę selekcji:", options)
+
+def get_mutation_type():
+    options = ["random", "swap", "inversion", "adaptive", "gauss"]
+    return choose_option("Wybierz rodzaj mutacji:", options)
+
+def get_crossover_type():
+    options = [
+        CrossingMethodsDec.TEST,
+        CrossingMethodsDec.SINGLE_POINT_ARITHMETIC,
+        CrossingMethodsDec.ARITHMETIC,
+        CrossingMethodsDec.LINEAR,
+        CrossingMethodsDec.BLEND_ALFA_BETA,
+        CrossingMethodsDec.BLEND_ALFA,
+        CrossingMethodsDec.AVERAGE,
+        CrossingMethodsDec.SIMPLE,
+        CrossingMethodsDec.RANDOM
+    ]
+    return choose_option("Wybierz typ krzyżowania:", options)
+
+def get_function_enum():
+    options = [FunctionsOptions.RASTRIGIN, FunctionsOptions.SCHWEFEL]
+    return choose_option("Wybierz funkcję optymalizacji:", options)
+
+def get_min_max():
+    options = [MinMax.MIN, MinMax.MAX]
+    return choose_option("Wybierz minimalizację lub maksymalizację:", options)
+
+def get_user_input(prompt, input_type=int):
+    while True:
+        try:
+            value = input_type(input(f"{prompt}: "))
+            if input_type == int and value <= 0:
+                print("Wartość musi być liczbą całkowitą większą od zera.")
+                continue
+            elif input_type == str and not value:
+                print("Wartość nie może być pusta.")
+                continue
+            else:
+                return value
+        except ValueError:
+            print("Wprowadzona wartość jest nieprawidłowa.")
+
+    # return input_type(input(f"{prompt}: "))
+
+def get_input_with_check(prompt, condition):
+    value = get_user_input(prompt)
+    while not condition(value):
+        print(f"Nieprawidłowa wartość: {value}. Proszę, spróbuj ponownie.")
+        value = get_user_input(prompt)
+    return value
+
+#Parametry podawane przez użytkownika
+num_genes = get_user_input("Podaj liczbę genów chromosomu (długość osobnika)")
+num_of_dimensions = get_user_input("Podaj liczbę wymiarów")
+num_generations = get_user_input("Podaj liczbę generacji (epok)")
+sol_per_pop = get_user_input("Podaj liczbę rozwiązań (chromosomów) w populacji")
+num_parents_mating = get_input_with_check(
+    "Podaj liczbę chromosomów, które zostaną rodzicami",
+    lambda x: x <= sol_per_pop
+)
+
+#Metody wybierane przez użytkownika
+func_enum = get_function_enum()
+func_min_max = get_min_max()
+parent_selection_type = get_selection_type() #The parent selection type. Supported types are sss (for steady-state selection), rws (for roulette wheel selection), sus (for stochastic universal selection), rank (for rank selection), random (for random selection), and tournament (for tournament selection).
+mutation_type = get_mutation_type()
+crossover_type = get_crossover_type()
+
+
+# num_genes = 2  #Liczba wymiarów
 ## FLAGI
-func_enum = FunctionsOptions.RASTRIGIN  #Tutaj wybieramy funkcje do optymalizacji
-func_min_max = MinMax.MIN  #Tutaj wybieramy czy liczymy maximum czy minimim
-selected_crossover = CrossingMethodsDec.RANDOM  #Tutaj wybieramy funkcje crossover
-parent_selection_type = "tournament"  #(rws)(random)
-#Przypisanie parametrów
-num_generations = 80
-sol_per_pop = 80
-num_parents_mating = 50
+# func_enum = FunctionsOptions.RASTRIGIN  #Tutaj wybieramy funkcje do optymalizacji
+# func_min_max = MinMax.MIN  #Tutaj wybieramy czy liczymy maximum czy minimim
+# selected_crossover = CrossingMethodsDec.RANDOM  #Tutaj wybieramy funkcje crossover
+# parent_selection_type = "tournament"  #(rws)(random)
+# #Przypisanie parametrów
+# num_generations = 80
+# sol_per_pop = 80
+# num_parents_mating = 50
 
 func = bf.Rastrigin(n_dimensions=num_genes) \
     if func_enum == FunctionsOptions.RASTRIGIN \
@@ -33,31 +116,43 @@ func = bf.Rastrigin(n_dimensions=num_genes) \
 
 decode_start = func.suggested_bounds()[0][0]  #zakres początkowy w szukanej funkcji
 decode_end = func.suggested_bounds()[1][0]  ##zakres końcowy w szukanej funkcji
-# mutation_type = "swap"  #(random)(None)(swap)(inversion)(adaptive)
-mutation_type = GaussMutation(num_genes, 0, 1, decode_start, decode_end, 0.2).mutate
-mutation_type_name = "GaussMutation" #potrzebne do wykresu
 
+mutation_name = None
+
+if mutation_type == "gauss":
+    mutation_type = GaussMutation(num_genes, 0, 1, decode_start, decode_end, 0.2).mutate
+    mutation_name = "gauss"
+
+
+# mutation_type = "swap"  #(random)(None)(swap)(inversion)(adaptive)
+#mutation_type = GaussMutation(num_genes, 0, 1, decode_start, decode_end, 0.2).mutate
 
 # crossover_type = "uniform"  #(single_point)(two_points)(uniform)
-match (selected_crossover):  #przypisanie własnych funckji crossover
-    case CrossingMethodsDec.TEST:
-        crossover_type = TestCrossover
+match (crossover_type):  #przypisanie własnych funckji crossover
     case CrossingMethodsDec.SINGLE_POINT_ARITHMETIC:
         crossover_type = SingleArithmeticalCrossover
+        crossover_name = CrossingMethodsDec.SINGLE_POINT_ARITHMETIC_STRING.value
     case CrossingMethodsDec.ARITHMETIC:
         crossover_type = ArithmeticalCrossover
+        crossover_name = CrossingMethodsDec.ARITHMETIC_STRING.value
     case CrossingMethodsDec.LINEAR:
         crossover_type = LinearCrossover(func).crossover
+        crossover_name = CrossingMethodsDec.LINEAR_STRING.value
     case CrossingMethodsDec.BLEND_ALFA_BETA:
         crossover_type = BlendCrossoverAlfaBeta
+        crossover_name = CrossingMethodsDec.BLEND_ALFA_BETA_STRING.value
     case CrossingMethodsDec.BLEND_ALFA:
         crossover_type = BlendCrossoverAlfa
+        crossover_name = CrossingMethodsDec.BLEND_ALFA_STRING.value
     case CrossingMethodsDec.AVERAGE:
         crossover_type = AverageCrossover
+        crossover_name = CrossingMethodsDec.AVERAGE_STRING.value
     case CrossingMethodsDec.SIMPLE:
         crossover_type = SimpleCrossover
+        crossover_name = CrossingMethodsDec.SIMPLE_STRING.value
     case CrossingMethodsDec.RANDOM:
         crossover_type = RandomCrossover
+        crossover_name = CrossingMethodsDec.RANDOM_STRING.value
 
 
 def fitness_func_min(ga_instance, solution,
@@ -132,6 +227,7 @@ ga_instance = pygad.GA(num_generations=num_generations,
                        logger=logger,
                        on_generation=on_generation,
                        parallel_processing=['thread', 4])
+
 ga_instance.run()
 
 best = ga_instance.best_solution()
@@ -148,14 +244,22 @@ statistics = [ga_instance.best_solutions_fitness, avg_fitness, std_fitness]
 labels = ['Best Fitness','Average Fitness', 'Standard Deviation']
 # colors = ['lightcoral', 'lightseagreen', 'indigo']
 
+mutation_name = mutation_name if mutation_name is not None else mutation_type
+
 for stat, label in zip(statistics, labels):
     make_plot(
         values = stat,
         file_name = os.path.join('Plots', f'Dec{label.replace(" ", "")}'),
         title = label,
-        mutation_type = mutation_type_name,
-        crossover_type = selected_crossover.name,
-        selection_type = parent_selection_type
+        func_enum = func_enum.name,
+        mutation_type = mutation_name,
+        crossover_type = crossover_name,
+        selection_type = parent_selection_type,
+        num_genes = num_genes,
+        num_of_dimensions = num_of_dimensions,
+        num_generations = num_generations,
+        sol_per_pop = sol_per_pop,
+        num_parents_mating = num_parents_mating
     )
 
 
