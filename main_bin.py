@@ -1,4 +1,5 @@
 import logging
+import time
 
 import pygad
 import numpy
@@ -256,15 +257,23 @@ ga_instance = pygad.GA(num_generations=num_generations,
                        on_generation=on_generation,
                        delay_after_gen=0.05,
                        parallel_processing=['thread', 4])
+start_time = time.time()
+
 ga_instance.run()
+
+end_time = time.time()
+execution_time = end_time - start_time
 
 best = ga_instance.best_solution()
 solution, solution_fitness, solution_idx = ga_instance.best_solution()
 print("Best specimen(2) : {solution}".format(solution=list(split(solution, num_of_dimensions))))
 print("Best specimen(10) : {solution}".format(
     solution=get_actual_values(solution, decode_start, decode_end, num_of_dimensions)))
-print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=1. / solution_fitness))
-
+print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=round(1. / solution_fitness, 4)))
+print("Best solution reached after {best_solution_generation} generations.".format(best_solution_generation=ga_instance.best_solution_generation))
+print("==============================================")
+print("Czas wykonywania obliczeń")
+print("Total execution time: {execution_time} seconds".format(execution_time=round(execution_time, 4)))
 # sztuczka: odwracamy my narysował nam się oczekiwany wykres dla problemu minimalizacji
 ga_instance.best_solutions_fitness = [1. / x for x in ga_instance.best_solutions_fitness]
 ga_instance.plot_fitness()

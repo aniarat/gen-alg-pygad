@@ -110,6 +110,12 @@ crossover_type = get_crossover_type()
 # sol_per_pop = 80
 # num_parents_mating = 50
 
+#When mutation_type='adaptive', then list/tuple/numpy.ndarray is expected
+if mutation_type == "adaptive":
+    mutation_num_genes = numpy.ones(num_genes, dtype=int) #Lista o długości równej liczbie genów
+else:
+    mutation_num_genes = 1
+
 func = bf.Rastrigin(n_dimensions=num_genes) \
     if func_enum == FunctionsOptions.RASTRIGIN \
     else bf.Schwefel(n_dimensions=num_genes)
@@ -254,7 +260,7 @@ print("Best specimen : {solution}".format(
     solution=solution))
 print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=round(1. / solution_fitness, 4)))
 # print("Execution time for the best solution: {best_solution_time} seconds".format(best_solution_time=round(best_solution_time, 4)))
-
+print("Best solution reached after {best_solution_generation} generations.".format(best_solution_generation=ga_instance.best_solution_generation))
 print("==============================================")
 print("Czas wykonywania obliczeń")
 print("Total execution time: {execution_time} seconds".format(execution_time=round(execution_time, 4)))

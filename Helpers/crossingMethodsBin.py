@@ -15,10 +15,11 @@ def TestCrossover(population: np.ndarray, offspring_size: tuple, ga_instance):
 def SinglePointCrossover(population: np.ndarray, offspring_size, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    # n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         parent1, parent2 = population[p1_idx], population[p2_idx]
         crossing_point = random.randint(1, len(parent1) - 1)
         child1 = np.append(parent1[:crossing_point], parent2[crossing_point:])
@@ -53,10 +54,11 @@ def SinglePointCrossover(population: np.ndarray, offspring_size, ga_instance):
 def TwoPointCrossover(population: np.ndarray, offspring_size, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    # n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         parent1, parent2 = population[p1_idx], population[p2_idx]
         crossing_point1, crossing_point2 = sorted(random.sample(range(1, len(parent1)), 2))
         child1 = np.append(np.append(parent1[:crossing_point1], parent2[crossing_point1:crossing_point2]),
@@ -73,10 +75,11 @@ def TwoPointCrossover(population: np.ndarray, offspring_size, ga_instance):
 def ThreePointCrossover(population: np.ndarray, offspring_size, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    # n_spec = offspring_size[1]
+    n_spec = population.shape[0]
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         parent1, parent2 = population[p1_idx], population[p2_idx]
         crossing_point1, crossing_point2, crossing_point3 = sorted(random.sample(range(1, len(parent1)), 3))
         child1 = np.append(np.append(np.append(parent1[:crossing_point1], parent2[crossing_point1:crossing_point2]),
@@ -186,10 +189,12 @@ def GrainCrossover(population: np.ndarray, offspring_size, ga_instance):
 def PartialCopyCrossover(population: np.ndarray, offspring_size, ga_instance):
     offspring = []
     n_offspring = offspring_size[0]
-    n_spec = offspring_size[1]
+    # n_spec = offspring_size[1]
+    n_spec = population.shape[0]
+
     while len(offspring) != n_offspring:
-        p1_idx = random.randint(0, n_spec)
-        p2_idx = random.randint(0, n_spec)
+        p1_idx = random.randint(0, n_spec - 1)
+        p2_idx = random.randint(0, n_spec - 1)
         parent1, parent2 = population[p1_idx], population[p2_idx]
         chromosome_length = len(parent1)
         cp1: int = random.randint(0, chromosome_length - 2)
@@ -218,6 +223,7 @@ class ScanningCrossover(CrossoverMethod):
         offspring = []
         n_offspring = offspring_size[0]
         n_spec = offspring_size[1]
+        # n_spec = population.shape[0]
         n_chrom = len(population[0])
         idx = 0
         while len(offspring) != n_offspring:
@@ -262,7 +268,8 @@ class MultivariateCrossover(CrossoverMethod):
     def crossover(self, population: np.ndarray, offspring_size, ga_instance):
             offspring = []
             n_offspring = offspring_size[0]
-            n_spec = len(population)
+            # n_spec = len(population)
+            n_spec = population.shape[0]
 
             while len(offspring) < n_offspring:
                 p1_idx = random.randint(0, n_spec - 1)
