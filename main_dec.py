@@ -157,12 +157,22 @@ match (crossover_type):  #przypisanie własnych funckji crossover
 
 def fitness_func_min(ga_instance, solution,
                      solution_idx):
-    return 1. / func(solution)
+    start_time = time.time()
+    fitness = 1. / func(solution)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print("Czas obliczenia funkcji dopasowania dla osobnika {}: {:.5f} sekundy".format(solution_idx, execution_time))
+    return fitness
 
 
 def fitness_func_max(ga_instance, solution,
                      solution_idx):
-    return func(solution)
+    start_time = time.time()
+    fitness = func(solution)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print("Czas obliczenia funkcji dopasowania dla osobnika {}: {:.5f} sekundy".format(solution_idx, execution_time))
+    return fitness
 
 
 fitness_function = fitness_func_min if func_min_max == MinMax.MIN else fitness_func_max
@@ -229,12 +239,16 @@ ga_instance = pygad.GA(num_generations=num_generations,
                        parallel_processing=['thread', 4])
 
 ga_instance.run()
-
+start_time = time.time()
 best = ga_instance.best_solution()
 solution, solution_fitness, solution_idx = ga_instance.best_solution()
+end_time = time.time()
+execution_time = end_time - start_time
 print("Best specimen : {solution}".format(
     solution=solution))
 print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=1. / solution_fitness))
+print("Execution time for the best solution: {:.5f} seconds".format(execution_time))
+
 
 # sztuczka: odwracamy my narysował nam się oczekiwany wykres dla problemu minimalizacji
 ga_instance.best_solutions_fitness = [1. / x for x in ga_instance.best_solutions_fitness]
